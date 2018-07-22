@@ -7,11 +7,11 @@ This module provides a collection of function decorators to handle common proced
 Before the function is executed, the current working directory is saved and the directory is changed to the provided **path**. After the function has completed, the directory is changed to the saved working directory.
 
 ```python
-from terse import in_directory
+from terse import in_dir
 from glob import glob
 import os
 
-@in_directory('/sys/class/net')
+@in_dir('/sys/class/net')
 def interfaces():
   return glob('*')
 
@@ -31,7 +31,7 @@ from terse import no_except
 def simple_log(function, exception):
   print(exception)
 
-@no_exception(instead_return=False)
+@no_except(instead_return=False)
 def example(raise_exception=False):
   if raise_exception:
     raise Exception("exception from example")
