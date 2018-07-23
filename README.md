@@ -40,3 +40,40 @@ def example(raise_exception=False):
 assert example()
 assert example(False) == False
 ```
+
+### On Returned
+Decorator will invoke **callback** whenever a value in **args** is returned by function.
+
+```python
+from terse import on_return
+
+def simple_log(function, returned):
+  print(returned)
+
+@on_returned(simple_log, False)
+def is_odd(num):
+  return num % 2 != 0
+  
+assert is_odd(1) == True
+assert is_odd(2) == False
+```
+
+### On Exception
+Decorator will invoke **callback** whenever exception of type in **args** is raised by function.
+
+```python
+from terse import on_exception
+
+def simple_log(function, returned):
+  print(returned)
+
+@on_exception(simple_log, ZeroDivisionError)
+def divide(a, b):
+  return a / b
+
+assert divide(1, 0) == 0.0
+try:
+  divide(1, 0)
+except ZeroDivisionError:
+  print("Caught exception")
+```
