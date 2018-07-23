@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
-# from distutils.core import setup
 from setuptools import setup, find_packages
 from os import path
-from io import open
+import pypandoc
 proj_path = path.abspath(path.dirname(__file__))
-with open(path.join(proj_path, 'README.md'), encoding='utf-8') as f:
-    longdesc = f.read()
+md_path = path.join(proj_path, 'README.md')
+long_description = pypandoc.convert(md_path, 'rst')
 
 setup(
-    name='terse',
-    version='0.0.2',
-    description='a collection of function decorators to handle common procedures done on the entry and exit points.',
     author='Chad Lucas',
     author_email='cjlucas85@gmail.com',
-    url='https://github.com/cjlucas85/terse',
-    packages=find_packages(),
-    long_description=longdesc,
+    description='a collection of function decorators to handle common procedures done on the entry and exit points.',
+    long_description=long_description,
     long_description_content_type='text/markdown',
-    # packages=['distutils', 'distutils.command'],
+    name='terse',
+    url='https://github.com/cjlucas85/terse',
+    version='0.0.5',
+    packages=find_packages(),
+    classifiers=(
+        'Development Status :: 4 - Beta',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.5',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: OS Independent',
+    ),
 )

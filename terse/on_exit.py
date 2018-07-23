@@ -1,4 +1,4 @@
-def on_exception(callback, *args):
+def on_raised(callback, *args):
     """Invoke callback if exception within args occurs. Reraise exception."""
     def decorator(main_function):
         def wrapper(*wargs, **kwargs):
@@ -26,7 +26,7 @@ def on_returned(callback, *args):
     return decorator
 
 
-def no_except(callback=lambda f, e: 0, instead_return=None):
+def no_raise(callback=lambda f, e: 0, instead_return=None):
     def decorator(main_function):
         def wrapper(*wargs, **kwargs):
             try:

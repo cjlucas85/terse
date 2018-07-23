@@ -22,7 +22,7 @@ print(os.getcwd())
 
 ## On Exit
 
-### No Exception
+### No Raise
 Decorator will catch all exceptions leaked or produced by callee. If provided with **callback** function, then the callback will only be invoked when an exception occurs. If provided with **instead_return**, then the value will be returned when an exception occurs.
 
 ```python
@@ -31,7 +31,7 @@ from terse import no_except
 def simple_log(function, exception):
   print(exception)
 
-@no_except(instead_return=False)
+@no_raise(instead_return=False)
 def example(raise_exception=False):
   if raise_exception:
     raise Exception("exception from example")
@@ -58,7 +58,7 @@ assert is_odd(1) == True
 assert is_odd(2) == False
 ```
 
-### On Exception
+### On Raised
 Decorator will invoke **callback** whenever exception of type in **args** is raised by function.
 
 ```python
@@ -67,7 +67,7 @@ from terse import on_exception
 def simple_log(function, returned):
   print(returned)
 
-@on_exception(simple_log, ZeroDivisionError)
+@on_raised(simple_log, ZeroDivisionError)
 def divide(a, b):
   return a / b
 

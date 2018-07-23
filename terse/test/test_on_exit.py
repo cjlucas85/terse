@@ -1,123 +1,124 @@
-from terse import on_exception
+from terse import on_raised
 from terse import on_returned
-from terse import no_except
+from terse import no_raise
 
-on_exception_counter = 0
-def test_on_exception_none():
-    global on_exception_counter
+
+on_raised_counter = 0
+def test_on_raised_none():
+    global on_raised_counter
     # SETUP PREDICTABLE COUNTER FUNCTION
     def increment_counter(f, e):
-        global on_exception_counter
-        on_exception_counter += 1
+        global on_raised_counter
+        on_raised_counter += 1
     # SETUP PASS THROUGH FUNCTION
-    @on_exception(increment_counter)
+    @on_raised(increment_counter)
     def invoke_error(error):
         if isinstance(error, Exception):
             raise error
         else:
             return error
     # TEST PASS THROUGH
-    on_exception_counter = 0
+    on_raised_counter = 0
     assert invoke_error(0) == 0
-    assert on_exception_counter == 0
+    assert on_raised_counter == 0
     assert invoke_error(1) == 1
-    assert on_exception_counter == 0
+    assert on_raised_counter == 0
     assert invoke_error(2) == 2
-    assert on_exception_counter == 0
+    assert on_raised_counter == 0
     # TEST DEFAULT
     try:
-        invoke_error(FileNotFoundError())
+        invoke_error(IOError())
         assert False
-    except FileNotFoundError:
-        assert on_exception_counter == 1
+    except IOError:
+        assert on_raised_counter == 1
     try:
-        invoke_error(FileExistsError())
+        invoke_error(OSError())
         assert False
-    except FileExistsError:
-        assert on_exception_counter == 2
+    except OSError:
+        assert on_raised_counter == 2
     try:
         invoke_error(NotImplementedError())
         assert False
     except NotImplementedError:
-        assert on_exception_counter == 3
+        assert on_raised_counter == 3
 
 
-def test_on_exception_singular():
-    global on_exception_counter
+def test_on_raised_singular():
+    global on_raised_counter
     # SETUP PREDICTABLE COUNTER FUNCTION
     def increment_counter(f, r):
-        global on_exception_counter
-        on_exception_counter += 1
+        global on_raised_counter
+        on_raised_counter += 1
     # SETUP PASS THROUGH FUNCTION
-    @on_exception(increment_counter, IndexError)
+    @on_raised(increment_counter, IndexError)
     def invoke_error_one(error):
         if isinstance(error, Exception):
             raise error
         else:
             return error
     # TEST PASS THROUGH
-    on_exception_counter = 0
+    on_raised_counter = 0
     assert invoke_error_one(0) == 0
-    assert on_exception_counter == 0
+    assert on_raised_counter == 0
     assert invoke_error_one(1) == 1
-    assert on_exception_counter == 0
+    assert on_raised_counter == 0
     assert invoke_error_one(2) == 2
-    assert on_exception_counter == 0
+    assert on_raised_counter == 0
     # TEST SINGULAR
     try:
         invoke_error_one(IndexError())
         assert False
     except IndexError:
-        assert on_exception_counter == 1
+        assert on_raised_counter == 1
     try:
-        invoke_error_one(FileExistsError())
+        invoke_error_one(OSError())
         assert False
-    except FileExistsError:
-        assert on_exception_counter == 1
+    except OSError:
+        assert on_raised_counter == 1
     try:
         invoke_error_one(NotImplementedError())
         assert False
     except NotImplementedError:
-        assert on_exception_counter == 1
+        assert on_raised_counter == 1
 
 
-def test_on_exception_many():
-    global on_exception_counter
+def test_on_raised_many():
+    global on_raised_counter
     # SETUP PREDICTABLE COUNTER FUNCTION
     def increment_counter(f, r):
-        global on_exception_counter
-        on_exception_counter += 1
+        global on_raised_counter
+        on_raised_counter += 1
     # SETUP PASS THROUGH FUNCTION
-    @on_exception(increment_counter, IndexError, KeyError)
+    @on_raised(increment_counter, IndexError, KeyError)
     def invoke_error_many(error):
         if isinstance(error, Exception):
             raise error
         else:
             return error
     # TEST PASS THROUGH
-    on_exception_counter = 0
+    on_raised_counter = 0
     assert invoke_error_many(0) == 0
-    assert on_exception_counter == 0
+    assert on_raised_counter == 0
     assert invoke_error_many(1) == 1
-    assert on_exception_counter == 0
+    assert on_raised_counter == 0
     assert invoke_error_many(2) == 2
-    assert on_exception_counter == 0
+    assert on_raised_counter == 0
     # TEST MULTIPLE
     try:
         invoke_error_many(IndexError())
         assert False
     except IndexError:
-        assert on_exception_counter == 1
+        assert on_raised_counter == 1
     try:
         invoke_error_many(KeyError())
         assert False
     except KeyError:
-        assert on_exception_counter == 2
+        assert on_raised_counter == 2
     try:
         invoke_error_many(NotImplementedError())
         assert False
     except NotImplementedError:
-        assert on_exception_counter == 2
+        assert on_raised_counter == 2
 
 
 on_returned_counter = 0
@@ -181,14 +182,14 @@ def test_on_returned_many():
     assert on_returned_counter == 2
 
 
-def test_no_except():
-    @no_except(instead_return=False)
+def test_no_raise():
+    @no_raise(instead_return=False)
     def f1():
         return True
-    @no_except(instead_return=False)
+    @no_raise(instead_return=False)
     def f2():
         raise Exception()
-    @no_except(instead_return=10)
+    @no_raise(instead_return=10)
     def f3():
         raise OSError()
     # RUN ALL THREE
