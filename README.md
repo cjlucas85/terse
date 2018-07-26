@@ -1,6 +1,13 @@
 # Python terse Library
 This module provides a collection of function decorators to handle common procedures done on the entry and exit points.
 
+## Installation
+This library can be installed using pip with the following command.
+
+```bash
+pip install terse
+```
+
 ## Directory
 
 ### In Directory
@@ -13,7 +20,7 @@ import os
 
 @in_dir('/sys/class/net')
 def interfaces():
-  return glob('*')
+    return glob('*')
 
 print(os.getcwd())
 print(interfaces())
@@ -29,13 +36,13 @@ Decorator will catch all exceptions leaked or produced by callee. If provided wi
 from terse import no_except
 
 def simple_log(function, exception):
-  print(exception)
+    print(exception)
 
 @no_raise(instead_return=False)
 def example(raise_exception=False):
-  if raise_exception:
-    raise Exception("exception from example")
-  return True
+    if raise_exception:
+        raise Exception("exception from example")
+    return True
 
 assert example()
 assert example(False) == False
@@ -45,17 +52,32 @@ assert example(False) == False
 Decorator will invoke **callback** whenever a value in **args** is returned by function.
 
 ```python
-from terse import on_return
+from terse import on_returned
+from enum import Enum
 
-def simple_log(function, returned):
-  print(returned)
 
-@on_returned(simple_log, False)
-def is_odd(num):
-  return num % 2 != 0
-  
-assert is_odd(1) == True
-assert is_odd(2) == False
+class Status(Enum):
+    SUCCESS = 0
+    FAILED = 1
+    CONNECTION_FAILURE = 2
+    DISK_FAILURE = 3
+
+
+def log(function, returned):
+    print("LOG: %s" % returned)
+
+
+@on_returned(log, Status.FAILED, Status.CONNECTION_FAILURE, Status.DISK_FAILURE)
+def example1(val):
+    return val
+
+assert example1(Status.SUCCESS) == Status.SUCCESS
+# prints "LOG: Status.FAILED"
+assert example1(Status.FAILED) == Status.FAILED
+# prints "LOG: Status.CONNECTION_FAILURE"
+assert example1(Status.CONNECTION_FAILURE) == Status.CONNECTION_FAILURE
+# prints "LOG: Status.DISK_FAILURE"
+assert example1(Status.DISK_FAILURE) == Status.DISK_FAILURE
 ```
 
 ### On Raised
@@ -65,15 +87,15 @@ Decorator will invoke **callback** whenever exception of type in **args** is rai
 from terse import on_exception
 
 def simple_log(function, returned):
-  print(returned)
+    print(returned)
 
 @on_raised(simple_log, ZeroDivisionError)
 def divide(a, b):
-  return a / b
+    return a / b
 
 assert divide(1, 0) == 0.0
 try:
-  divide(1, 0)
+    divide(1, 0)
 except ZeroDivisionError:
-  print("Caught exception")
+    print("Caught exception")
 ```
