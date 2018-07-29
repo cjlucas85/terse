@@ -11,19 +11,23 @@ pip install terse
 ## Directory
 
 ### In Directory
-Before the function is executed, the current working directory is saved and the directory is changed to the provided **path**. After the function has completed, the directory is changed to the saved working directory.
+Before the function is executed, the current working directory is saved and the directory is changed to the provided **path**. After the function has completed, the directory is changed to the saved working directory. *Caution: This is intended for single threaded usage. Threads should use absolute paths.*
 
 ```python
 from terse import in_dir
 from glob import glob
 import os
 
-@in_dir('/sys/class/net')
-def interfaces():
+# Returns all files and directories at file system's root.
+@in_dir('/')
+def root_files():
     return glob('*')
 
+# Prints current working directory.
 print(os.getcwd())
-print(interfaces())
+# Prints fils gathered from root.
+print(root_files())
+# Demonstrates current working directory is preserved.
 print(os.getcwd())
 ```
 
@@ -35,16 +39,25 @@ Decorator will catch all exceptions leaked or produced by callee. If provided wi
 ```python
 from terse import no_except
 
-def simple_log(function, exception):
-    print(exception)
 
-@no_raise(instead_return=False)
-def example(raise_exception=False):
-    if raise_exception:
-        raise Exception("exception from example")
+def log(function, exception):
+    print('LOG: %s' % exception)
+
+
+# If raise_exception is set to True, raise given exception.
+# Otherwise, return True
+@no_raise(instead_return=False, callback=log)
+def example(exception=None):
+    if exception:
+        raise exception
     return True
 
-assert example()
+# Example with no parameters raises no exceptions,
+# makes no calls to log, returns True.
+assert example() == True
+# Example with parameter raises given exception,
+# makes a call to log, surpresses exception and
+# returns False.
 assert example(False) == False
 ```
 
