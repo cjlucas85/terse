@@ -39,12 +39,10 @@ Decorator will catch all exceptions leaked or produced by callee. If provided wi
 ```python
 from terse import no_except
 
-
 def log(function, exception):
     print('LOG: %s' % exception)
 
-
-# If raise_exception is set to True, raise given exception.
+# If exception is given, raise given exception.
 # Otherwise, return True
 @no_raise(instead_return=False, callback=log)
 def example(exception=None):
@@ -55,6 +53,7 @@ def example(exception=None):
 # Example with no parameters raises no exceptions,
 # makes no calls to log, returns True.
 assert example() == True
+
 # Example with parameter raises given exception,
 # makes a call to log, surpresses exception and
 # returns False.
@@ -68,29 +67,34 @@ Decorator will invoke **callback** whenever a value in **args** is returned by f
 from terse import on_returned
 from enum import Enum
 
-
 class Status(Enum):
     SUCCESS = 0
     FAILED = 1
-    CONNECTION_FAILURE = 2
-    DISK_FAILURE = 3
-
+    CONNECTION_FAILED = 2
+    DISK_FAILED = 3
 
 def log(function, returned):
     print("LOG: %s" % returned)
 
-
-@on_returned(log, Status.FAILED, Status.CONNECTION_FAILURE, Status.DISK_FAILURE)
-def example1(val):
+# Function example returns any value passed in.
+# on_returned will invoke log whenever values FAILED, 
+# CONNECTION_FAILED or DISK_FAILED from enum Status are
+# returned by example.
+@on_returned(log, Status.FAILED, Status.CONNECTION_FAILED, Status.DISK_FAILED)
+def example(val):
     return val
-
+    
+# log is not invoked.
 assert example1(Status.SUCCESS) == Status.SUCCESS
-# prints "LOG: Status.FAILED"
-assert example1(Status.FAILED) == Status.FAILED
-# prints "LOG: Status.CONNECTION_FAILURE"
-assert example1(Status.CONNECTION_FAILURE) == Status.CONNECTION_FAILURE
-# prints "LOG: Status.DISK_FAILURE"
-assert example1(Status.DISK_FAILURE) == Status.DISK_FAILURE
+
+# Log invoked: prints "LOG: Status.FAILED"
+assert example(Status.FAILED) == Status.FAILED
+
+# Log invoked: prints "LOG: Status.CONNECTION_FAILURE"
+assert example(Status.CONNECTION_FAILED) == Status.CONNECTION_FAILED
+
+# Log invoked: prints "LOG: Status.DISK_FAILURE"
+assert example(Status.DISK_FAILED) == Status.DISK_FAILED
 ```
 
 ### On Raised
@@ -99,16 +103,104 @@ Decorator will invoke **callback** whenever exception of type in **args** is rai
 ```python
 from terse import on_exception
 
-def simple_log(function, returned):
+def log(function, exception):
     print(returned)
 
-@on_raised(simple_log, ZeroDivisionError)
-def divide(a, b):
-    return a / b
+# The following are examples for two uses of on_raised.
+# First is for any exception and the second is a set of
+# exceptions.
 
-assert divide(1, 0) == 0.0
+
+
+# ANY EXCEPTION EXAMPLE
+
+# If exception is given, raise given exception.
+# Otherwise, return True
+# on_raised will invoke log for all exceptions
+# raised by example_any.
+@on_raised(log)
+def example_any(exception=None)
+    if exception:
+        raise exception
+    return True
+
+# example_any is given no exceptions to throw.
+# Therefore, it will raise nothing and return True.
+assert example_any() == True
+
+# example_any is given ZeroDivisionError exception.
+# It will raise ZeroDivisionError instance.
+# on_raised detects exception raised and invokes log.
 try:
-    divide(1, 0)
+    example_any(ZeroDivisionError())
+    assert False
 except ZeroDivisionError:
-    print("Caught exception")
+    pass
+
+# example_any is given ValueError exception.
+# It will raise ValueError instance.
+# on_raised detects exception raised and invokes log.
+try:
+    example_any(ValueError())
+    assert False
+except ValueError:
+    pass
+
+# example_any is given KeyError exception.
+# It will raise KeyError instance.
+# on_raised detects exception raised and invokes log.
+try:
+    example_any(KeyError())
+    assert False
+except ValueError:
+    pass
+
+
+
+# SET OF EXCEPTIONS EXAMPLE
+
+# If exception is given, raise given exception.
+# Otherwise, return True.
+# on_raised will only invoke log for ZeroDivisionError
+# and ValueError. All other exceptions are ignored by
+# on_raised.
+@on_raised(log, ZeroDivisionError, ValueError)
+def example_set(exception=None)
+    if exception:
+        raise exception
+    return True
+
+# example_set is given no exceptions to throw.
+# Therefore, it will raise nothing and return True.
+assert example_set() == True
+
+# example_set is given ZeroDivisionError exception.
+# It will raise ZeroDivisionError instance.
+# on_raised detects exception raised and invokes log.
+try:
+    example_set(ZeroDivisionError())
+    assert False
+except ZeroDivisionError:
+    pass
+
+# example_set is given ValueError exception.
+# It will raise ValueError instance.
+# on_raised detects exception raised and invokes log.
+try:
+    example_set(ValueError())
+    assert False
+except ValueError:
+    pass
+
+# example_set is given KeyError exception.
+# It will raise KeyError instance.
+# example_set detects exception, but it will not
+# invoke log because KeyError is not in the set of
+# exceptions to be tracked.
+try:
+    example_set(KeyError())
+    assert False
+except ValueError:
+    pass
+
 ```
