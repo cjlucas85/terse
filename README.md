@@ -76,25 +76,55 @@ class Status(Enum):
 def log(function, returned):
     print("LOG: %s" % returned)
 
-# Function example returns any value passed in.
+# The following are examples for two uses of on_returned.
+# First is for any return value and the second is for a 
+# set of return values.
+
+
+
+# ANY RETURN VALUE
+
+# Function example_any returns any value passed in.
+# on_returned will invoke log for any return value.
+@on_returned(log)
+def example_any(val):
+    return val
+    
+# Log invoked: prints "LOG: Status.SUCCESS"
+assert example_any(Status.SUCCESS) == Status.SUCCESS
+
+# Log invoked: prints "LOG: Status.FAILED"
+assert example_any(Status.FAILED) == Status.FAILED
+
+# Log invoked: prints "LOG: None"
+assert example_any(None) == None
+
+# Log invoked: prints "LOG:1"
+assert example_any(1) == 1
+
+
+
+# SET OF RETURN VALUES
+
+# Function example_set returns any value passed in.
 # on_returned will invoke log whenever values FAILED, 
 # CONNECTION_FAILED or DISK_FAILED from enum Status are
 # returned by example.
 @on_returned(log, Status.FAILED, Status.CONNECTION_FAILED, Status.DISK_FAILED)
-def example(val):
+def example_set(val):
     return val
     
 # log is not invoked.
-assert example1(Status.SUCCESS) == Status.SUCCESS
+assert example_set(Status.SUCCESS) == Status.SUCCESS
 
 # Log invoked: prints "LOG: Status.FAILED"
-assert example(Status.FAILED) == Status.FAILED
+assert example_set(Status.FAILED) == Status.FAILED
 
 # Log invoked: prints "LOG: Status.CONNECTION_FAILURE"
-assert example(Status.CONNECTION_FAILED) == Status.CONNECTION_FAILED
+assert example_set(Status.CONNECTION_FAILED) == Status.CONNECTION_FAILED
 
 # Log invoked: prints "LOG: Status.DISK_FAILURE"
-assert example(Status.DISK_FAILED) == Status.DISK_FAILED
+assert example_set(Status.DISK_FAILED) == Status.DISK_FAILED
 ```
 
 ### On Raised
