@@ -17,7 +17,7 @@ def on_returned(callback, *args):
     def decorator(main_function):
         def wrapper(*wargs, **kwargs):
                 returned = main_function(*wargs, **kwargs)
-                if len(args) == 0 and returned is None:
+                if len(args) == 0:
                     callback(main_function, returned)
                 elif returned in (args):
                     callback(main_function, returned)

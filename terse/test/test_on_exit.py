@@ -134,12 +134,10 @@ def test_on_returned_empty():
     assert on_returned_counter == 0
     assert return_value(None) == None
     assert on_returned_counter == 1
-    assert return_value(None) == None
-    assert on_returned_counter == 2
     assert return_value(1) == 1
     assert on_returned_counter == 2
     assert return_value(2) == 2
-    assert on_returned_counter == 2
+    assert on_returned_counter == 3
 
 
 def test_on_returned_singular():
