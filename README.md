@@ -31,10 +31,43 @@ print(root_files())
 print(os.getcwd())
 ```
 
+## Invoke
+
+### Main
+Sets the function up to be the file's main function. If the file is __main__, 
+then the function is executed. The return value will attempt to be converted 
+to a value that can be passed to sys.exit; however if no value can be 
+converted, it's assumed the function exited successfully.
+
+Traditionally in Python you do the following to create the main entry point 
+in the file.
+```python
+def main():
+    print("Hello World!")
+
+
+if __name__ == '__main__':
+    main()
+```
+
+This can be replaced by the following.
+```python
+from terse import main
+
+@main()
+def main_impl():
+    print("Hello World!")
+```
+
+
+
 ## On Exit
 
 ### No Raise
-Decorator will catch all exceptions leaked or produced by callee. If provided with **callback** function, then the callback will only be invoked when an exception occurs. If provided with **instead_return**, then the value will be returned when an exception occurs.
+Decorator will catch all exceptions leaked or produced by callee. If provided
+with **callback** function, then the callback will only be invoked when an
+exception occurs. If provided with **instead_return**, then the value will be 
+returned when an exception occurs.
 
 ```python
 from terse import no_except
@@ -61,7 +94,8 @@ assert example(False) == False
 ```
 
 ### On Returned
-Decorator will invoke **callback** whenever a value in **args** is returned by function.
+Decorator will invoke **callback** whenever a value in **args** is returned by 
+function.
 
 ```python
 from terse import on_returned
@@ -128,7 +162,8 @@ assert example_set(Status.DISK_FAILED) == Status.DISK_FAILED
 ```
 
 ### On Raised
-Decorator will invoke **callback** whenever exception of type in **args** is raised by function.
+Decorator will invoke **callback** whenever exception of type in **args** is 
+raised by function.
 
 ```python
 from terse import on_exception
