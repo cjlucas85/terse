@@ -54,7 +54,7 @@ This can be replaced by the following.
 ```python
 from terse import main
 
-@main()
+@main
 def main_impl():
     print("Hello World!")
 ```

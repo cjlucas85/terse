@@ -14,7 +14,7 @@ setup(
     long_description_content_type='text/markdown',
     name='terse',
     url='https://github.com/cjlucas85/terse',
-    version='0.0.7',
+    version='0.0.8',
     packages=find_packages(),
     classifiers=(
         'Development Status :: 4 - Beta',

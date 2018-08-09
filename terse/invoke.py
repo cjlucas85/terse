@@ -1,6 +1,6 @@
 import sys
 
-def main():
+def main(func):
     """Main Decorator"""
     def decorator(main_function):
         if main_function.__module__ == '__main__':
