@@ -1,6 +1,7 @@
 import sys
 
-def main(func):
+
+def main(func=None):
     """Main Decorator"""
     def decorator(main_function):
         if main_function.__module__ == '__main__':
@@ -9,4 +10,7 @@ def main(func):
                 sys.exit(int(returned))
             except (TypeError, ValueError):
                 sys.exit(0)
-    return decorator
+    if callable(func):
+        return decorator(func)
+    else:
+        return decorator

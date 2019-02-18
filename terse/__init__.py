@@ -1,6 +1,7 @@
 # Change Directory
-from .in_directory import InDirectory
 from .in_directory import in_dir
+from .in_directory import cwd
+from .in_directory import cwd as InDirectory
 # Invoke
 from .invoke import main
 # On Exit
