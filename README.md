@@ -70,7 +70,7 @@ exception occurs. If provided with **instead_return**, then the value will be
 returned when an exception occurs.
 
 ```python
-from terse import no_except
+from terse import no_raise
 
 def log(function, exception):
     print('LOG: %s' % exception)
@@ -90,7 +90,7 @@ assert example() == True
 # Example with parameter raises given exception,
 # makes a call to log, surpresses exception and
 # returns False.
-assert example(False) == False
+assert example(True) == False
 ```
 
 ### On Returned
@@ -166,10 +166,10 @@ Decorator will invoke **callback** whenever exception of type in **args** is
 raised by function.
 
 ```python
-from terse import on_exception
+from terse import on_raised
 
 def log(function, exception):
-    print(returned)
+    print(repr(exception))
 
 # The following are examples for two uses of on_raised.
 # First is for any exception and the second is a set of
@@ -184,7 +184,7 @@ def log(function, exception):
 # on_raised will invoke log for all exceptions
 # raised by example_any.
 @on_raised(log)
-def example_any(exception=None)
+def example_any(exception=None):
     if exception:
         raise exception
     return True
@@ -230,7 +230,7 @@ except ValueError:
 # and ValueError. All other exceptions are ignored by
 # on_raised.
 @on_raised(log, ZeroDivisionError, ValueError)
-def example_set(exception=None)
+def example_set(exception=None):
     if exception:
         raise exception
     return True
