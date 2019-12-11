@@ -20,3 +20,14 @@ def in_dir(path):
         return wrapper
     return decorator
 
+
+def preserve_cwd(func=None):
+    def decorator(fn):
+        def wrapper(*args, **kwargs):
+            with cwd(os.getcwd()):
+                return fn(*args, **kwargs)
+        return wrapper
+    if callable(func):
+        return decorator(func)
+    else:
+        return decorator
